@@ -19,9 +19,6 @@ class Ui:
             weapon = pygame.image.load(path).convert_alpha()
             self.weapon_graphics.append(weapon)
 
-
-
-
     def mainmenu(self,menu_active):
         if menu_active:
             image = pygame.image.load("graphics/HUD/menu/menu.png").convert_alpha()
@@ -58,8 +55,6 @@ class Ui:
             self.display_surface.blit(start_text_surf,start_text_rect)
             self.display_surface.blit(exit_text_surf,exit_text_rect)
             
-
-
     def show_bar(self,current,max_amount,bg_rect,color):
         #draw bg
         pygame.draw.rect(self.display_surface,UI_BG_COLOR,bg_rect)
@@ -85,7 +80,6 @@ class Ui:
         self.display_surface.blit(text_surf,text_rect)
         pygame.draw.rect(self.display_surface,UI_BORDER_COLOR,text_rect.inflate(8,8),1)
     
-
     def death_message(self,player_dead):
 
         text_surf = self.font.render(str("YOU ARE DEAD"),False,TEXT_COLOR)
@@ -162,7 +156,6 @@ class Ui:
         full_path = f"graphics/player/icons/all_icons/{curr_spell}.png"
         surf = pygame.image.load(full_path).convert_alpha()
         return surf
-
 
     def display(self,player):
         # pygame.draw.rect(self.display_surface,"black",self.health_bar_rect)

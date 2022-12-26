@@ -2,25 +2,22 @@ import pygame
 from settings import *
 from entity import Entity
 from support import *
-from random import choice,randint
-from minions import Minions
+from pictures import ImportImages
 
 
 class Enemy(Entity):
-    def __init__(self,monster_type,pos,groups,obstacle_sprites,damage_player):
+    def __init__(self,monster_type,pos,groups,obstacle_sprites,damage_player,trigger_death):
         super().__init__(groups)
         #general setup
-        self.import_graphics(monster_type)
+        # self.import_graphics(monster_type)
+        pic = ImportImages()
+        self.animations = pic.small_monsters[monster_type]
         self.sprite_type = "enemy"
         self.status = "idle"
         self.image = self.animations[self.status][self.frame_index]
         self.rect = self.image.get_rect(topleft=(pos))
         self.hitbox = self.rect.inflate(-10,-10)
         self.pos = pos
-
-
-
-        #graphics setup 
 
         #movement
         self.obstacle_sprites = obstacle_sprites
@@ -36,12 +33,14 @@ class Enemy(Entity):
         self.attack_radius = self.monster_info['attack_radius']
         self.notice_radius = self.monster_info['notice_radius']
         self.attack_type = self.monster_info['attack_type']
+        self.attack_sound = self.monster_info["attack_sound"]
 
         #player interaction
         self.can_attack = True
         self.attack_time = None
         self.attack_cooldown = 400
         self.damage_player = damage_player
+        self.trigger_death = trigger_death
         self.aggro = False
 
 
@@ -56,12 +55,21 @@ class Enemy(Entity):
         self.cast_skill_time = 400
         self.spawn = True
 
+        self.attack_music = pygame.mixer.Sound(self.attack_sound)
+        self.attack_music.set_volume(0.2)
 
     def import_graphics(self,name):
-        self.animations = {"idle":[],"move":[],"attack":[],"attack_1":[],"attack_2":[]}
-        main_path = f"graphics/enemies/{name}/"
-        for animation in self.animations.keys():
-            self.animations[animation] = import_images(main_path+animation)
+        if name == "raccoon":
+            self.animations = {"idle":[],"move":[],"attack":[],"attack_1":[],"attack_2":[]}
+            main_path = f"graphics/enemies/{name}/"
+            for animation in self.animations.keys():
+                self.animations[animation] = import_images(main_path+animation)
+
+        else:
+            self.animations = {"idle":[],"down":[],"left":[],"right":[],"up":[],"attack":[]}
+            main_path = f"graphics/enemies/{name}/"
+            for animation in self.animations.keys():
+                self.animations[animation] = import_images(main_path+animation)
 
     def animate(self):
         animations = self.animations[self.status]
@@ -82,23 +90,16 @@ class Enemy(Entity):
             self.image.set_alpha(255)
 
     def enemy_attack_logic(self):#effects raccoon for attacking animate  destroyable objects
-        if self.monster_name == "bamboo":
+        if self.monster_name != "raccoon":
             self.status = "attack"
 
         if self.monster_name == "raccoon":
+            self.status = "attack"
             self.hitbox = self.rect.inflate(+10,+10)
             if self.health >= self.monster_info['health']//2:
-            #     self.status = "attack"
-            # elif self.health <= self.monster_info["health"]//2:
-                self.status = "attack_2"
                 self.spawn = True
                 self.speed = 0
-                self.minion_amount = 1
-                # self.summon_minions()
             self.speed = self.monster_info["speed"]
-
-    def summon_minions(self):
-        Minions(self.pos,"raccoon")
 
     def destroy_objects(self):#check every enemy col and obstacle
         for coll_sprite in self.obstacle_sprites:
@@ -124,13 +125,25 @@ class Enemy(Entity):
 
     def get_status(self,player):
         distance = self.get_player_distance_direction(player)[0]
-        if not player.death:
+        if self.monster_name == "raccoon":
+            if not player.death:
+                if distance <= self.attack_radius and self.can_attack:
+                    if self.status != "attack":
+                        self.frame_index = 0
+                    self.enemy_attack_logic()
+                elif distance <= self.notice_radius :
+                    self.status = "move"
+                else:
+                    self.status = "idle"
+            if self.health <= 0:
+                self.kill()
+        else:
             if distance <= self.attack_radius and self.can_attack:
-                if self.status != "attack":
-                    self.frame_index = 0
-                self.enemy_attack_logic()
+                    if self.status != "attack":
+                        self.frame_index = 0
+                    self.enemy_attack_logic()
             elif distance <= self.notice_radius :
-                self.status = "move"
+                self.status = self.side
             else:
                 self.status = "idle"
         if self.health <= 0:
@@ -140,24 +153,31 @@ class Enemy(Entity):
         if self.status == "attack":
             self.attack_time = pygame.time.get_ticks()
             self.damage_player(self.attack_damage,self.attack_type)
+            self.attack_music.play(0)
 
         elif self.status == "move":
             self.direction = self.get_player_distance_direction(player)[1]
+
         
         elif self.aggro:
             self.direction = self.get_player_distance_direction(player)[1]
         
+        elif self.status in ["right","left","up","down"]:
+            self.direction = self.get_player_distance_direction(player)[1]
         else:
             self.direction = pygame.math.Vector2()
 
     def move(self,speed):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
-
             self.hitbox.x += self.direction.x *speed
             self.collision("horizontal")
             self.hitbox.y += self.direction.y * speed
             self.collision("vertical")
+
+    def check_death(self):
+        if self.health <= 0:
+            self.trigger_death(self.rect.center,self.monster_name)
 
     def cooldown(self):
         current_time = pygame.time.get_ticks()
@@ -193,10 +213,13 @@ class Enemy(Entity):
         self.animate()
         self.destroy_objects()
         self.cooldown()
+        self.direction_side()
+        self.check_death()
 
     def enemy_update(self,player):
         self.get_status(player)
         self.actions(player)
+
 
 
 

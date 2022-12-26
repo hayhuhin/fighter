@@ -22,7 +22,6 @@ def import_images(path):
             
     return items_list
 
-
 def import_big_images(path):
     items_list = []
     for _,__,info in walk(path):

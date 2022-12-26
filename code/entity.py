@@ -8,8 +8,7 @@ class Entity(pygame.sprite.Sprite):
         self.frame_index = 0
         self.direction = pygame.math.Vector2()
         self.animation_speed = 0.20
-        
-
+        self.side = "up"
 
     def collision(self,direction):
         if direction == "horizontal":
@@ -38,6 +37,17 @@ class Entity(pygame.sprite.Sprite):
         self.collision("vertical")
         self.rect.center = self.hitbox.center
 
+    def direction_side(self):
+        dir_x = self.direction.x
+        dir_y = self.direction.y
+        if dir_x > 0 :
+            self.side = "right"
+        if dir_x < 0 :
+            self.side = "left"
+        if dir_y > 0 :
+            self.side = "down"
+        if dir_y < 0 :
+            self.side = "up"
 
     def wave_value(self):
         value = sin(pygame.time.get_ticks())

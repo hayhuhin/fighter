@@ -2,6 +2,7 @@ import pygame,sys
 from settings import *
 from level import Level
 
+
 class Game:
     def __init__(self):
 
@@ -11,6 +12,9 @@ class Game:
         pygame.display.set_caption("Fighter")
         self.clock = pygame.time.Clock()
         self.level = Level() 
+        self.music = pygame.mixer.Sound("audio/main.mp3")
+        self.music.set_volume(0.2)
+        self.music.play()
     
     def run(self):
         while True:
@@ -24,7 +28,6 @@ class Game:
             self.level.run()
             pygame.display.update()
             self.clock.tick(FPS)
-
 
 if __name__ == "__main__":
     game = Game()

@@ -29,11 +29,11 @@ UI_BORDER_COLOR_ACTIVE = "gold"
 #weapon data
 weapon_data = {
     "bow":{"cooldown":50,"damage":10,"graphic":"graphics/player/weapon/bow/Sprite.png"},
-    "sword":{"cooldown":100,"damage":15,"graphic":"graphics/player/weapon/sword/Sprite.png"},
-    "axe":{"cooldown":300,"damage":20,"graphic":"graphics/player/weapon/axe/Sprite.png"},
-    "hammer":{"cooldown":400,"damage":30,"graphic":"graphics/player/weapon/hammer/Sprite.png"},
+    # "sword":{"cooldown":100,"damage":15,"graphic":"graphics/player/weapon/sword/Sprite.png"},
+    # "axe":{"cooldown":300,"damage":20,"graphic":"graphics/player/weapon/axe/Sprite.png"},
+    # "hammer":{"cooldown":400,"damage":30,"graphic":"graphics/player/weapon/hammer/Sprite.png"},
     "magicwand":{"cooldown":150,"damage":8,"graphic":"graphics/player/weapon/magicwand/Sprite.png"},
-    "pickaxe":{"cooldown":125,"damage":18,"graphic":"graphics/player/weapon/pickaxe/Sprite.png"},
+    # "pickaxe":{"cooldown":125,"damage":18,"graphic":"graphics/player/weapon/pickaxe/Sprite.png"},
 }
 
 
@@ -54,10 +54,10 @@ shooting_data = {
 }
 
 monster_data = {
-	'squid': {'health': 100,'exp':100,'damage':20,'attack_type': 'slash', 'attack_sound':'../audio/attack/slash.wav', 'speed': 1, 'resistance': 3, 'attack_radius': 80, 'notice_radius': 30},
-	'raccoon': {'health': 400,'exp':250,'damage':40,'attack_type': 'claw',  'attack_sound':'../audio/attack/claw.wav','speed': 2, 'resistance': 0, 'attack_radius': 45, 'notice_radius': 180},
-	'spirit': {'health': 100,'exp':110,'damage':8,'attack_type': 'thunder', 'attack_sound':'../audio/attack/fireball.wav', 'speed': 1, 'resistance': 3, 'attack_radius': 60, 'notice_radius': 30},
-	'bamboo': {'health': 70,'exp':120,'damage':10,'attack_type': 'leaf_attack', 'attack_sound':'../audio/attack/slash.wav', 'speed': 2, 'resistance': 6, 'attack_radius': 30, 'notice_radius': 80},
-    'small_raccoon': {'health': 70,'exp':100,'damage':10,'attack_type': 'slash', 'attack_sound':'../audio/attack/slash.wav', 'speed': 2, 'resistance': 6, 'attack_radius': 30, 'notice_radius': 80}
+	'raccoon': {'health': 400,'exp':500,'damage':40,'attack_type': 'claw',  'attack_sound':'audio/attack/claw.wav','speed': 2, 'resistance': 0, 'attack_radius': 45, 'notice_radius': 180},
+    'axolot': {'health': 120,'exp':150,'damage':40,'attack_type': 'slash',  'attack_sound':'audio/attack/claw.wav','speed': 2, 'resistance': 0, 'attack_radius': 45, 'notice_radius': 80},
+     'beast': {'health': 80,'exp':170,'damage':30,'attack_type': 'claw',  'attack_sound':'audio/attack/claw.wav','speed': 3, 'resistance': 0, 'attack_radius': 45, 'notice_radius': 80},
+	'bamboo': {'health': 70,'exp':100,'damage':10,'attack_type': 'leaf_attack', 'attack_sound':'audio/attack/slash.wav', 'speed': 2, 'resistance': 6, 'attack_radius': 30, 'notice_radius': 80},
+    'skull': {'health': 70,'exp':80,'damage':15,'attack_type': 'ice', 'attack_sound':'audio/attack/slash.wav', 'speed': 2, 'resistance': 6, 'attack_radius': 30, 'notice_radius': 180},
     }
 

@@ -2,6 +2,7 @@ import pygame
 from settings import *
 from support import import_images
 from entity import Entity
+from pictures import ImportImages
 
 class Player(Entity):
     def __init__(self,pos,groups,obstacle_sprites,create_attack,destroy_attack,create_magic):
@@ -17,7 +18,8 @@ class Player(Entity):
 
 
         #graphics setup
-        self.import_character_assets()
+        self.player_images = ImportImages()
+        self.animations = self.player_images.player
         self.status = "down"
         self.animation_speed = 0.20
 
@@ -35,6 +37,7 @@ class Player(Entity):
         self.can_dash = True
         self.dash_time = 800
         self.dash_distance = 28
+        self.dash_energy_cost = 15
 
         #weapons
         self.create_attack = create_attack
@@ -92,7 +95,9 @@ class Player(Entity):
         self.menu_timer = None
         self.can_click = True
 
-
+        #music setup 
+        self.sound_death = pygame.mixer.Sound("audio/death.wav")
+        self.sound_death.set_volume(0.4)
 
     def current_click_side(self):
         """returns state of a player after every click
@@ -103,7 +108,7 @@ class Player(Entity):
             self.clicked = False
 
     def animate(self):
-        if not self.death:
+        if not self.death :
             animation = self.animations[self.status]
             self.frame_index += self.animation_speed
             if self.frame_index >= len(animation):
@@ -118,7 +123,9 @@ class Player(Entity):
                 self.image.set_alpha(alpha)
             else:
                 self.image.set_alpha(255)
-
+        else:
+            self.status = self.status.split("_")[0]
+            
     def get_Status(self):
         #idle status
         if self.direction.x == 0 and self.direction.y == 0:
@@ -140,19 +147,6 @@ class Player(Entity):
             if "attack" in self.status:
                 self.status = self.status.replace("_attack","")
 
-    def import_character_assets(self):
-        character_path = "graphics/player/movement/"
-        self.animations = {
-            "up":[],"down":[],"right":[],"left":[],
-            "up_idle":[],"down_idle":[],"right_idle":[],"left_idle":[],
-            "up_attack":[],"down_attack":[],"right_attack":[],"left_attack":[],
-            "dash":[],
-        }
-
-        for animation in self.animations.keys():
-            full_path  = character_path + animation
-            self.animations[animation] = import_images(full_path)
-
     def get_weapon_angle(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_pos_x = mouse_pos[0]
@@ -166,11 +160,6 @@ class Player(Entity):
         elif mouse_pos_x > 220 and mouse_pos_y < 100 :
             self.weapon_angle = "right_up"
     
-    def create_attack(self):
-        if self.clicked:
-            self.create_attack()
-            self.clicked = False
-
     def destroy_att(self):
         self.destroy_attack()
 
@@ -282,9 +271,22 @@ class Player(Entity):
 
     def dash(self):
         if self.can_dash:
-            self.animation_speed = 0.40
+            #vulnerable false for not taking damage while in dash stance
+            self.vulnerable = False
+            self.hurt_time = pygame.time.get_ticks()
+
+            #animetion setup
+            self.animation_speed = 0.60
+
+            #dash cooldown
             self.can_dash = False
             self.dash_timer = pygame.time.get_ticks()
+
+            #energy reduction
+            self.energy -= self.dash_energy_cost
+
+
+            #dash direction setup
             dash_direction = self.weapon_angle
             if "right" in dash_direction:
                 self.hitbox.x += self.dash_distance
@@ -296,8 +298,8 @@ class Player(Entity):
                 self.hitbox.x -= self.dash_distance
                 
     def cooldowns(self):
+        #all cooldown managment
         curr_time = pygame.time.get_ticks()
-
         if self.attacking:
             if curr_time - self.attack_time >= self.attack_cooldown + weapon_data[self.weapon]["cooldown"]:
                 self.attacking = False
@@ -344,7 +346,7 @@ class Player(Entity):
             chosen_projectile = self.magic
             base_damage = weapon_data["magicwand"]["damage"]
             weapon_damage = shooting_data[weapon_type][chosen_projectile]["strength"]
-        print(base_damage + weapon_damage)
+
         return base_damage + weapon_damage
 
     def energy_regeneration(self):
@@ -354,7 +356,7 @@ class Player(Entity):
     def get_full_weapon_damage(self):
         base_damage = self.stats["attack"]
         weapon_damage = weapon_data[self.weapon]["damage"]
-        print(weapon_damage+base_damage)
+
         return base_damage + weapon_damage
 
     def death_animation(self):
@@ -380,7 +382,7 @@ class Player(Entity):
         self.move(self.speed)
         self.energy_regeneration()
 
-        # print(self.menu)
+
 
 
 

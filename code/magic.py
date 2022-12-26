@@ -20,8 +20,6 @@ class Magic(pygame.sprite.Sprite):
         self.spell_on = False
         self.spell_timer = None
 
-
-
     def cooldowns(self):
         curr_time = pygame.time.get_ticks()
         if self.spell_on:
@@ -48,8 +46,6 @@ class Magic(pygame.sprite.Sprite):
         else:
             self.image = frames[int(self.frame_index)]
             self.rect = self.image.get_rect(center=(self.player.rect.center + pygame.math.Vector2(2,5)))
-
-
 
     def update(self):
         self.animate()

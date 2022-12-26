@@ -33,9 +33,7 @@ class Weapon(pygame.sprite.Sprite):
 
         #weapon animation timer
         self.weapon_timer = 600
-        
-
-           
+                  
     def curr_rect(self):
         player = self.player
         if "idle" in self.player_angle:

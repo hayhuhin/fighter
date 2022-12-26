@@ -26,6 +26,8 @@ class Projectiles(pygame.sprite.Sprite):
         self.animation_speed = 0.16
         self.shoot_timer = 1200
         self.speed = 6
+        self.launch_timer = None
+        self.launch = False
 
         #mouse position 
         self.mouse_pos = pygame.mouse.get_pos()
@@ -76,68 +78,23 @@ class Projectiles(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(midleft=(player.rect.midright)+ pygame.math.Vector2(-10,5))
         return self.rect
 
-    def update_projectile_angle(self):
-        curr_angle = self.player.weapon_angle
-        if curr_angle == "right_up":
-            self.angle = 135
-        if curr_angle == "right":
-            self.angle = 90
-        if curr_angle == "up":
-            self.angle = 180
-        if curr_angle == "left_up":
-            self.angle = 225
-        if curr_angle == "left":
-            self.angle = 270
-        if curr_angle == "left_down":
-            self.angle = 315
-        if curr_angle == "down":
-            self.angle = 0
-        if curr_angle == "right_down":
-            self.angle = 45
-
     def animate_projectile(self,):
-        animations = import_images(self.data[self.weapon_type]["data"]["graphic"])
-        self.frame_index += self.animation_speed
-        if self.frame_index >= len(animations)-1:
-            self.frame_index = 0
-        else:
-            reversed_image = pygame.transform.rotate(animations[int(self.frame_index)],self.angle)
-            self.image = reversed_image
+        if not self.launch:
+            self.launch = True
+            self.launch_timer = pygame.time.get_ticks()
+            animations = import_images(self.data[self.weapon_type]["data"]["graphic"])
+            self.frame_index += self.animation_speed
+            if self.frame_index >= len(animations)-1:
+                self.frame_index = 0
+            else:
+                reversed_image = pygame.transform.rotate(animations[int(self.frame_index)],self.angle)
+                self.image = reversed_image
 
     def projectile_movement(self):
         destination_vec = pygame.math.Vector2(self.mouse_pos)
         origin_vec = pygame.math.Vector2(WIDTH//2,HEIGHT//2)
         direction = (origin_vec-destination_vec).normalize()
         self.direction = -direction
-
-    def old_projectile_movement(self):#DONT USE
-            self.timer = pygame.time.get_ticks()
-            curr_angle = self.player.clicked_side
-            if self.player.weapon_animation_ended:
-                if curr_angle == "right_up":
-                    self.rect.x += self.speed
-                    self.rect.y += -self.speed
-                if curr_angle == "right":
-                    self.rect.x += self.speed
-                    self.rect.y + 0
-                if curr_angle == "up":
-                    self.rect.x + 0
-                    self.rect.y += -self.speed
-                if curr_angle == "left_up":
-                    self.rect.x += -self.speed
-                    self.rect.y += -self.speed 
-                if curr_angle == "left":
-                    self.rect.x += -self.speed
-                    self.rect.y + 0
-                if curr_angle == "left_down":
-                    self.rect.x += -self.speed
-                    self.rect.y += self.speed
-                if curr_angle == "down":
-                    self.rect.x + 0
-                    self.rect.y += self.speed
-                if curr_angle == "right_down":
-                    self.rect.x += self.speed
-                    self.rect.y += self.speed
 
     def update_projectile_angle_advanced(self):
         mouse_pos = pygame.math.Vector2(pygame.mouse.get_pos())
@@ -158,6 +115,9 @@ class Projectiles(pygame.sprite.Sprite):
         curr_time = pygame.time.get_ticks()
         if curr_time - self.player.attack_time >= self.shoot_timer:
             self.terminate_projectile()
+        if self.launch:
+            if curr_time - self.launch_timer >= 400:
+                self.launch = False
                 
     def update(self):
         self.move(self.speed)

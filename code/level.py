@@ -9,7 +9,7 @@ from ui import Ui
 from projectiles import Projectiles
 from enemy import Enemy
 from magic import Magic
-from minions import Minions
+from pictures import ImportImages
 
 
 class Level:
@@ -32,6 +32,10 @@ class Level:
 
         #user interface
         self.ui = Ui()
+
+
+        #particles 
+        self.animation_player = ImportImages()
 
         #sprite setup 
         self.create_map()
@@ -106,7 +110,7 @@ class Level:
                     if style == "enemies":
                         if col != "-1":
                             if col == "0":
-                                self.player = Player((x,1000),
+                                self.player = Player((x,y),
                                 [self.visible_sprites],
                                 self.obstacles_sprites,
                                 self.create_attack,
@@ -116,9 +120,13 @@ class Level:
                             else:
                                 if col == "2":monster_name = "bamboo"
                                 elif col == "1":monster_name = "raccoon"
+                                elif col == "3":monster_name = "axolot"
+                                elif col == "4":monster_name = "skull"
+                                elif col == "5":monster_name = "beast"
                                 enemy = Enemy(monster_name,(x,y),
                                 [self.visible_sprites,self.attackable_sprites],
-                                self.obstacles_sprites,self.damage_player)
+                                self.obstacles_sprites,self.damage_player,
+                                self.trigger_death)
 
     def create_attack(self):
         if self.player.weapon == "bow" or self.player.weapon == "magicwand":
@@ -143,9 +151,6 @@ class Level:
     def destroy_attack(self):
         pass
 
-    def enemy_spawn_minions(self):
-        Minions([self.visible_sprites,self.attackable_sprites],(60,1000),"raccoon")
-
     def player_attack_logic(self):
         if self.attack_sprites:
             for attacking_weapon in self.attack_sprites:
@@ -158,6 +163,8 @@ class Level:
                                 attacking_weapon.terminate_projectile()
                             if target_sprite.lives <= 0:
                                 target_sprite.kill()
+
+
                         else:
                             target_sprite.get_damage(self.player,attacking_weapon.sprite_type)
                             if attacking_weapon.sprite_type == "projectile":
@@ -176,7 +183,10 @@ class Level:
             self.player.health -= amount
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
+            self.animation_player.create_particles(attack_type,self.player.rect.center,[self.visible_sprites])
 
+    def trigger_death(self,pos,particle_type):
+        self.animation_player.create_particles(particle_type,pos,[self.visible_sprites])
 
     def run(self):
         self.visible_sprites.custom_draw(self.player)
@@ -185,8 +195,6 @@ class Level:
         self.visible_sprites.enemy_update(self.player)
         self.player_attack_logic()
         self.enemy_go_away_after_player_death()
-        self.enemy_spawn_minions()
-
 
 
 class YSortCameraGroup(pygame.sprite.Group):
