@@ -9,12 +9,12 @@ Welcome to our top-down game built with Pygame! In this game, you will take on t
     - Install Pygame library by running `pip install pygame`.
 
 2. **Starting the Game**
-    - Run `python main.py` to launch the game.
+    - Run `python code/main.py` to launch the game.
 
 3. **Controls**
-    - Use the arrow keys or WASD to move the warrior.
+    - Use the WASD to move the warrior.
     - Press the Spacebar to cast mage spells.
-    - Navigate through menus using the mouse or keyboard.
+
 
 4. **Objective**
     - Defeat all monsters on the map to progress.
@@ -37,19 +37,9 @@ Welcome to our top-down game built with Pygame! In this game, you will take on t
 
 ## Credits
 
-- Developed by [Your Name]
-- Artwork sourced from [Artists/Websites]
-- Sound effects obtained from [Sound Libraries/Websites]
+- Developed by valeri levinson
 - Inspired by classic top-down RPG games.
 
 ## Contributions
 
-Contributions are welcome! If you have any suggestions, improvements, or feature ideas, feel free to fork the repository and submit a pull request.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE). Feel free to modify and distribute it as per the terms of the license.
-
----
-
-Thank you for playing! Enjoy the adventure and may the odds be ever in your favor!
+not possible to pull the code due the licenses of the assets.
